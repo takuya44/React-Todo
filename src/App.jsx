@@ -1,35 +1,59 @@
-import React from "react";
+import React, { useState } from "react";
 import "./styles.css";
 
 export const App = () => {
+  const [todoText, setTodoText] = useState("");
+  //console.log(todoText);
+  const [incomopleteTodos, setIncomopleteTodos] = useState([
+    "あああ",
+    "いいい"
+  ]);
+  const [comopleteTodos, serComoleteTodos] = useState(["ううう"]);
+
+  const onChangeTodoText = (event) => setTodoText(event.target.value);
+
+  const onClickAdd = () => {
+    if (todoText === "") return;
+    const newTodos = [...incomopleteTodos, todoText];
+    setIncomopleteTodos(newTodos);
+    setTodoText("");
+  };
+
   return (
     <>
-      <div>
-        <input placeholder="TODOを入力" />
-        <button>追加</button>
+      <div className="input-area">
+        <input
+          placeholder="TODOを入力"
+          value={todoText}
+          onChange={onChangeTodoText}
+        />
+        <button onClick={onClickAdd}>追加</button>
       </div>
-      <div>
-        <p>未完了のTODO</p>
+      <div className="incomoplete-area">
+        <p className="title">未完了のTODO</p>
         <ul>
-          <div>
-            <li>あああ</li>
-            <button>完了</button>
-            <button>削除</button>
-          </div>
-          <div>
-            <li>いいい</li>
-            <button>完了</button>
-            <button>削除</button>
-          </div>
+          {incomopleteTodos.map((todo) => {
+            return (
+              <div key={todo} className="list-row">
+                <li>{todo}</li>
+                <button>完了</button>
+                <button>削除</button>
+              </div>
+            );
+          })}
         </ul>
       </div>
-      <div>
-        <p>完了のTODO</p>
+      <div className="comoplete-area">
+        <p className="title">完了のTODO</p>
         <ul>
-          <div>
-            <li>ううう</li>
-            <button>戻す</button>
-          </div>
+          {comopleteTodos.map((todo) => {
+            return (
+              <div key={todo} className="list-row">
+                <li>{todo}</li>
+                <button>戻す</button>
+              </div>
+            );
+          })}
         </ul>
       </div>
     </>
