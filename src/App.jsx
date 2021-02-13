@@ -4,12 +4,9 @@ import "./styles.css";
 export const App = () => {
   const [todoText, setTodoText] = useState("");
   //console.log(todoText);
-  const [incomopleteTodos, setIncomopleteTodos] = useState([
-    "あああ",
-    "いいい"
-  ]);
+  const [incomopleteTodos, setIncomopleteTodos] = useState([]);
 
-  const [comopleteTodos, serComoleteTodos] = useState(["ううう"]);
+  const [comopleteTodos, serComoleteTodos] = useState([]);
 
   const onChangeTodoText = (event) => setTodoText(event.target.value);
 
@@ -32,6 +29,7 @@ export const App = () => {
   //完了ボタン
   const onClickComplete = (index) => {
     const newIncompleteTodos = [...incomopleteTodos];
+    //spliceで削除 対象箇所１行だけ削除する。
     newIncompleteTodos.splice(index, 1);
 
     const newcomopleteTodos = [...comopleteTodos, incomopleteTodos[index]];
@@ -44,6 +42,7 @@ export const App = () => {
   //戻すボタン
   const onClickBack = (index) => {
     const newCompleteTodos = [...comopleteTodos];
+    //spliceで削除 対象箇所１行だけ削除する。
     newCompleteTodos.splice(index, 1);
 
     const newIncompleteTodos = [...incomopleteTodos, comopleteTodos[index]];
