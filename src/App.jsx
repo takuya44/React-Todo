@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./styles.css";
 import { InputTodo } from "./compornents/InputTodo";
 import { IncompleteTodos } from "./compornents/IncompleteTodos";
+import { CompleteTodos } from "./compornents/CompleteTodos";
 
 export const App = () => {
   const [todoText, setTodoText] = useState("");
@@ -61,22 +62,19 @@ export const App = () => {
         todoText={todoText}
         onChange={onChangeTodoText}
         onClick={onClickAdd}
+        disabled={incomopleteTodos.length >= 5}
       />
-      <IncompleteTodos />
-
-      <div className="comoplete-area">
-        <p className="title">完了のTODO</p>
-        <ul>
-          {comopleteTodos.map((todo, index) => {
-            return (
-              <div key={todo} className="list-row">
-                <li>{todo}</li>
-                <button onClick={() => onClickBack(index)}>戻す</button>
-              </div>
-            );
-          })}
-        </ul>
-      </div>
+      {incomopleteTodos.length >= 5 && (
+        <p style={{ color: "red" }}>
+          登録できるtodo５個までだぞー。早くやりなや
+        </p>
+      )}
+      <IncompleteTodos
+        todos={incomopleteTodos}
+        onClickComplete={onClickComplete}
+        onClickDelete={onClickDelete}
+      />
+      <CompleteTodos todoss={comopleteTodos} onClickBack={onClickBack} />
     </>
   );
 };
