@@ -1,8 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import "./styles.css";
 import { InputTodo } from "./compornents/InputTodo";
 import { IncompleteTodos } from "./compornents/IncompleteTodos";
 import { CompleteTodos } from "./compornents/CompleteTodos";
+
+// const todos = [{
+//   id: 1,
+//   text: 'todo text1',
+//   completed: false,
+// },{
+//   id: 2,
+//   text: 'todo text2',
+//   completed: true,
+// },{
+//   id: 3,
+//   text: 'todo text1',
+//   completed: false,
+// }]
 
 export const App = () => {
   const [todoText, setTodoText] = useState("");
@@ -11,70 +25,77 @@ export const App = () => {
 
   const [comopleteTodos, serComoleteTodos] = useState([]);
 
-  const onChangeTodoText = (event) => setTodoText(event.target.value);
+  const handleChangeTodoText = (event) => setTodoText(event.target.value);
+
+  const isMaxIncompleteTodos = incomopleteTodos.length >= 5;
 
   //追加ボタン
-  const onClickAdd = () => {
+  const handleClickAdd = useCallback(() => {
     if (todoText === "") return;
-    const newTodos = [...incomopleteTodos, todoText];
-    setIncomopleteTodos(newTodos);
+    setIncomopleteTodos((prevIncomopleteTodos) => [
+      ...prevIncomopleteTodos,
+      todoText,
+    ]);
     setTodoText("");
-  };
+  }, [todoText]);
 
   //削除ボタン
-  const onClickDelete = (index) => {
-    const newTodos = [...incomopleteTodos];
-    //console.log(newTodos);
-    newTodos.splice(index, 1);
-    setIncomopleteTodos(newTodos);
-  };
+  const handleClickDelete = useCallback((deleteIndex) => {
+    setIncomopleteTodos((prevIncomopleteTodos) =>
+      prevIncomopleteTodos.filter(
+        (_todo, todoIndex) => todoIndex !== deleteIndex
+      )
+    );
+  }, []);
 
   //完了ボタン
-  const onClickComplete = (index) => {
-    const newIncompleteTodos = [...incomopleteTodos];
-    //spliceで削除 対象箇所１行だけ削除する。
-    newIncompleteTodos.splice(index, 1);
+  const handleClickComplete = useCallback(
+    (index) => {
+      const newIncompleteTodos = [...incomopleteTodos];
+      //spliceで削除 対象箇所１行だけ削除する。
+      newIncompleteTodos.splice(index, 1);
 
-    const newcomopleteTodos = [...comopleteTodos, incomopleteTodos[index]];
-    //未完了Todoから削除
-    setIncomopleteTodos(newIncompleteTodos);
-    //完了Todoへ追加
-    serComoleteTodos(newcomopleteTodos);
-  };
+      const newcomopleteTodos = [...comopleteTodos, incomopleteTodos[index]];
+      //未完了Todoから削除
+      setIncomopleteTodos(newIncompleteTodos);
+      //完了Todoへ追加
+      serComoleteTodos(newcomopleteTodos);
+    },
+    [newIncompleteTodos, newcomopleteTodos]
+  );
 
   //戻すボタン
-  const onClickBack = (index) => {
-    const newCompleteTodos = [...comopleteTodos];
-    //spliceで削除 対象箇所１行だけ削除する。
-    newCompleteTodos.splice(index, 1);
-
-    const newIncompleteTodos = [...incomopleteTodos, comopleteTodos[index]];
-
+  const handleClickBack = useCallback((index) => {
     //完了Todoから削除
-    serComoleteTodos(newCompleteTodos);
+    serComoleteTodos((prevComopleteTodos) =>
+      prevComopleteTodos.filter((_todo, todoIndex) => todoIndex !== index)
+    );
     //未完了Todoへ追加
-    setIncomopleteTodos(newIncompleteTodos);
-  };
+    setIncomopleteTodos((prevIncompletedTodos) => [
+      ...prevIncompletedTodos,
+      comopleteTodos[index],
+    ]);
+  }, []);
 
   return (
     <>
       <InputTodo
         todoText={todoText}
-        onChange={onChangeTodoText}
-        onClick={onClickAdd}
-        disabled={incomopleteTodos.length >= 5}
+        onChangeInput={handleChangeTodoText}
+        onClick={handleClickAdd}
+        disabled={isMaxIncompleteTodos}
       />
-      {incomopleteTodos.length >= 5 && (
+      {isMaxIncompleteTodos && (
         <p style={{ color: "red" }}>
           登録できるtodo５個までだぞー。早くやりなや
         </p>
       )}
       <IncompleteTodos
         todos={incomopleteTodos}
-        onClickComplete={onClickComplete}
-        onClickDelete={onClickDelete}
+        onClickComplete={handleClickComplete}
+        onClickDelete={handleClickDelete}
       />
-      <CompleteTodos todoss={comopleteTodos} onClickBack={onClickBack} />
+      <CompleteTodos todos={comopleteTodos} onClickBack={handleClickBack} />
     </>
   );
 };
